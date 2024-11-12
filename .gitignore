@@ -1,3 +1,9 @@
+data/
+logs/
+models/
+torch_hub/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
