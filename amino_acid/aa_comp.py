@@ -22,20 +22,17 @@ class AAComp:
             print(path)
             for acc in data:
                 pro_seq = data[acc]['pro_seq']
-                pro_aa, is_epi = IsolateAA(data[acc]).filter_epitopes()
-                epi_seq = ''.join(pro_aa[is_epi==1])
-                other_seq = ''.join(pro_aa[is_epi==0])
+                c = IsolateAA(data[acc])
                 aa_data[acc] = {
-                    'epitope_seq': epi_seq,
-                    'other_seq': other_seq,
+                    'epitope_seq': c.get_epi_seq(),
+                    'other_seq': c.get_other_seq(),
                 }
                 num_pro += 1
                 num_epi += len(data[acc]['epitopes'])
-                if len(other_seq) == len(pro_seq):
+                if len((aa_data[acc]['other_seq']) == len(pro_seq):
                     print(acc)
                     print(data[acc]['epitopes'])
-                    print(epi_seq)
-                    print(pro_seq)
+                    print(aa_data[acc])
         print(f"Number of proteins = {num_pro}")
         print(f"Number of epitopes = {num_epi}")
         return aa_data, num_pro, num_epi
@@ -48,9 +45,8 @@ class AAComp:
             print(path)
             for acc in data:
                 c = IsolateAA(data[acc])
-                pro_aa, is_epi = c.filter_epitopes()
-                epi_len = len(is_epi[is_epi==1])
-                other_len = len(is_epi[is_epi==0])
+                epi_len = len(c.get_epi_seq())
+                other_len = len(c.get_other_seq())
                 epi_seq, other_seq = c.isolate_2aa()
                 epi_counts += Counter(epi_seq)
                 total_epi += epi_len

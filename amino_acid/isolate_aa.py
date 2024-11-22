@@ -11,27 +11,27 @@ class IsolateAA:
     def __init__(self, record:dict):
         self.pro_seq = record['pro_seq']
         self.epitopes = record['epitopes']
-        self.pro_aa = None
-        self.is_epi = None
+        self.filter_epitopes()
 
     def filter_epitopes(self):
-        '''
-        retrieve epitope sequence and non-epitope seq
-        '''
+        # retrieve epitope sequence and non-epitope seq
         self.pro_aa = np.array(list(self.pro_seq))
         self.is_epi = np.zeros(len(self.pro_seq))
         for item in self.epitopes.values():
             start = int(item['start']) - 1
             end = int(item['end'])
             self.is_epi[start:end] = 1
-        return self.pro_aa, self.is_epi
+
+    def get_epi_seq(self):
+        return ''.join(self.pro_aa[self.is_epi==1])
+
+    def get_other_seq(self):
+        return ''.join(self.pro_aa[self.is_epi==0])
 
     def isolate_1aa(self):
         '''
         retrieve epitope sequence and non-epitope seq
         '''
-        if not self.is_epi:
-            self.filter_epitopes()
         epi_seq = self.pro_aa[self.is_epi==1]
         other_seq = self.pro_aa[self.is_epi==0]
         return epi_seq, other_seq
@@ -40,8 +40,6 @@ class IsolateAA:
         '''
         retrieve epitope sequence and non-epitope seq
         '''
-        if not self.is_epi:
-            self.filter_epitopes()
         epi_seq, other_seq = [], []
         for i in range(len(self.pro_seq)-1):
             if self.is_epi[i] == self.is_epi[i+1]:
