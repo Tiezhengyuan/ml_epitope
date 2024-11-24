@@ -60,8 +60,9 @@ class AAComp:
         epi_counts = {}
         for data, path in data_iter:
             for acc in data:
-                aa_counts, n = IsolateAA(data[acc]).slice_aa(k)
-                num_epi += n
+                c = IsolateAA(data[acc])
+                aa_counts = c.kmer_counts(k)
+                num_epi += c.num_epitopes()
                 for aa, count in aa_counts.items():
                     if aa not in epi_counts:
                         epi_counts[aa] = count

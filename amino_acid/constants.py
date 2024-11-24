@@ -34,55 +34,62 @@ AA = {
 
 PROPERTY = {
     'A': {
-        'name': 'Alanine',
-        'abbreviation': 'Ala',
-        'hydrophobicity': 0.61,
-        'polarity': 8.1,
-        'polarizability': 0.046,
-        'van_der_Waals_volume': 1.00
+        'name'                  : 'Alanine',
+        'abbreviation'          : 'Ala',
+        'hydrophobicity_ph7'    : 41,
+        'hydrophobicity'        : 0.61,
+        'polarity'              : 8.1,
+        'polarizability'        : 0.046,
+        'van_der_Waals_volume'  : 1.00
     },
     'R': {
-        'name': 'Arginine',
-        'abbreviation': 'Arg',
-        'hydrophobicity': 0.60,
-        'polarity': 10.5,
-        'polarizability': 0.291,
-        'van_der_Waals_volume': 6.13
+        'name'                  : 'Arginine',
+        'abbreviation'          : 'Arg',
+        'hydrophobicity_ph7'    : -14,
+        'hydrophobicity'        : 0.60,
+        'polarity'              : 10.5,
+        'polarizability'        : 0.291,
+        'van_der_Waals_volume'  : 6.13
     },
     'N': {
-        'name': 'Asparagine',
-        'abbreviation': 'Asn',
-        'hydrophobicity': 0.06,
-        'polarity': 11.6,
-        'polarizability': 0.134,
-        'van_der_Waals_volume': 2.95
+        'name'                  : 'Asparagine',
+        'abbreviation'          : 'Asn',
+        'hydrophobicity_ph7'    : -28,
+        'hydrophobicity'        : 0.06,
+        'polarity'              : 11.6,
+        'polarizability'        : 0.134,
+        'van_der_Waals_volume'  : 2.95
     },
     'D': {
-        'name': 'Aspartic Acid',
-        'abbreviation': 'Asp',
-        'hydrophobicity': 0.46,
-        'polarity': 13.0,
-        'polarizability': 0.105,
-        'van_der_Waals_volume': 2.78
+        'name'                  : 'Aspartic Acid',
+        'abbreviation'          : 'Asp',
+        'hydrophobicity_ph7'    : -55,
+        'hydrophobicity'        : 0.46,
+        'polarity'              : 13.0,
+        'polarizability'        : 0.105,
+        'van_der_Waals_volume'  : 2.78
     },
-    'C': {'name': 'Cysteine',
-        'abbreviation': 'Cyc',
-        'hydrophobicity': 1.07,
-        'polarity': 5.5,
-        'polarizability': 0.128,
-        'van_der_Waals_volume': 2.43
+    'C': {'name'                : 'Cysteine',
+        'abbreviation'          : 'Cys',
+        'hydrophobicity_ph7'    : 49,
+        'hydrophobicity'        : 1.07,
+        'polarity'              : 5.5,
+        'polarizability'        : 0.128,
+        'van_der_Waals_volume'  : 2.43
     },
     'Q': {
-        'name': 'Glutamine',
-        'abbreviation': 'Gln',
-        'hydrophobicity': 0.0,
-        'polarity': 10.5,
-        'polarizability': 0.180,
-        'van_der_Waals_volume': 3.95
+        'name'                  : 'Glutamine',
+        'abbreviation'          : 'Gln',
+        'hydrophobicity_ph7'    : -10,
+        'hydrophobicity'        : 0.0,
+        'polarity'              : 10.5,
+        'polarizability'        : 0.180,
+        'van_der_Waals_volume'  : 3.95
     },
     'E': {
         'name': 'Glutamic Acid',
         'abbreviation': 'Glu',
+        'hydrophobicity_ph7': -31,
         'hydrophobicity': 0.47,
         'polarity': 12.3,
         'polarizability': 0.151,
@@ -91,6 +98,7 @@ PROPERTY = {
     'G': {
         'name': 'Glycine',
         'abbreviation': 'Gly',
+        'hydrophobicity_ph7': 0,
         'hydrophobicity': 0.07,
         'polarity': 9.0,
         'polarizability': 0.000,
@@ -99,22 +107,25 @@ PROPERTY = {
     'H': {
         'name': 'Histidine',
         'abbreviation': 'His',
+        'hydrophobicity_ph7': 8,
         'hydrophobicity': 0.61,
         'polarity': 10.4,
         'polarizability': 0.230,
         'van_der_Waals_volume': 4.66
     },
     'I': {
-        'name': 'Isoleucine',
-        'abbreviation': 'Ile',
-        'hydrophobicity': 2.22,
-        'polarity': 5.2,
-        'polarizability': 0.186,
-        'van_der_Waals_volume': 4.00
+        'name'                  : 'Isoleucine',
+        'abbreviation'          : 'Ile',
+        'hydrophobicity_ph7'      : 99,
+        'hydrophobicity'        : 2.22,
+        'polarity'              : 5.2,
+        'polarizability'        : 0.186,
+        'van_der_Waals_volume'  : 4.00
     },
     'L': {
         'name': 'Leucine',
         'abbreviation': 'Leu',
+        'hydrophobicity_ph7': 97,
         'hydrophobicity': 1.53,
         'polarity': 4.9,
         'polarizability': 0.186,
@@ -123,6 +134,7 @@ PROPERTY = {
     'K': {
         'name': 'Lysine',
         'abbreviation': 'Lys',
+        'hydrophobicity_ph7': -23,
         'hydrophobicity': 1.15,
         'polarity': 11.3,
         'polarizability': 0.219,
@@ -131,6 +143,7 @@ PROPERTY = {
     'M': {
         'name': 'Methionine',
         'abbreviation': 'Met',
+        'hydrophobicity_ph7': 74,
         'hydrophobicity': 1.18,
         'polarity': 5.7,
         'polarizability': 0.221,
@@ -139,6 +152,7 @@ PROPERTY = {
     'F': {
         'name': 'Phenylalanine',
         'abbreviation': 'Phe',
+        'hydrophobicity_ph7': 100,
         'hydrophobicity': 2.02,
         'polarity': 5.2,
         'polarizability': 0.290,
@@ -147,6 +161,7 @@ PROPERTY = {
     'P': {
         'name': 'Proline',
         'abbreviation': 'Pro',
+        'hydrophobicity_ph7': -46,
         'hydrophobicity': 1.95,
         'polarity': 8.0,
         'polarizability': 0.131,
@@ -155,6 +170,7 @@ PROPERTY = {
     'S': {
         'name': 'Serine',
         'abbreviation': 'Ser',
+        'hydrophobicity_ph7': -5,
         'hydrophobicity': 0.05,
         'polarity': 9.2,
         'polarizability': 0.062,
@@ -163,6 +179,7 @@ PROPERTY = {
     'T': {
         'name': 'Threonine',
         'abbreviation': 'Thr',
+        'hydrophobicity_ph7': 13,
         'hydrophobicity': 0.05,
         'polarity': 8.6,
         'polarizability': 0.108,
@@ -171,22 +188,25 @@ PROPERTY = {
     'W': {
         'name': 'Tryptophan',
         'abbreviation': 'Trp',
+        'hydrophobicity_ph7': 97,
         'hydrophobicity': 2.65,
         'polarity': 5.4,
         'polarizability': 0.409,
         'van_der_Waals_volume': 8.08
     },
     'Y': {
-        'name': 'Tyrosine',
-        'abbreviation': Tyr,
-        'hydrophobicity': 1.88,
-        'polarity': 6.2,
-        'polarizability': 0.298,
-        'van_der_Waals_volume': 6.47
+        'name'                  : 'Tyrosine',
+        'abbreviation'          : 'Tyr',
+        'hydrophobicity_ph7'    : 63,
+        'hydrophobicity'        : 1.88,
+        'polarity'              : 6.2,
+        'polarizability'        : 0.298,
+        'van_der_Waals_volume'  : 6.47
     },
     'V': {
         'name': 'Valine',
         'abbreviation': 'Val',
+        'hydrophobicity_ph7': 76,
         'hydrophobicity': 1.32,
         'polarity': 5.9,
         'polarizability': 0.140,
