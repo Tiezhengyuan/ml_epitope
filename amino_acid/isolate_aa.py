@@ -3,7 +3,7 @@ import numpy as np
 import json
 from collections import Counter
 
-from .utils import Utils
+from utils import Utils
 
 
 class IsolateAA:
@@ -75,6 +75,7 @@ class IsolateAA:
         1. slice all epiptops into <size>
         2. longer k-mer slidding, 
         3. shorter. expanding to <size> from two sides
+        Note: some sliced seq may be shorter
         '''
         segment_seq = set()
         for item in self.epitopes:
@@ -120,6 +121,15 @@ class IsolateAA:
         '''
         # get index
         ix = np.where(self.is_epi == 0)[0]
+        m = len(ix)/size
+        if m > num:
+            if m > num * 2:
+                if m > num * 4:
+                    num = num * 3
+                else:
+                    num = num * 2
+            else:
+                num = int(m)
         # try 10x times
         segment_seq, n = set(), 0
         while len(segment_seq) < num and n < num * 10:
@@ -130,3 +140,22 @@ class IsolateAA:
                 segment_seq.add(other_seq)
             n += 1
         return list(segment_seq)
+    
+    def random_seq(self):
+        # get index
+        ix = np.where(self.is_epi == 0)[0]
+
+        # try 10x times
+        segment_seq = set()
+        for item in self.epitopes:
+            size = len(item['seq'])
+            m, n = 0, 0
+            while n <= 40 and m < 1000:
+                start = np.random.choice(ix)
+                end = start + size
+                if end < self.pro_len and self.is_epi[end] == 0:
+                    other_seq = self.pro_seq[start:end]
+                    segment_seq.add(other_seq)
+                    n += 1
+                m += 0
+        return list(segment_seq)        

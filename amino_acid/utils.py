@@ -3,20 +3,37 @@
 '''
 import os
 import numpy as np
+import pandas as pd
 import json
 from collections import Counter
 
 class Utils:
 
+    @staticmethod
+    def scan_text(indir:str, sep):
+        for root, dirs, files in os.walk(indir):
+            for file_name in files:
+                path = os.path.join(root, file_name)
+                df = pd.read_csv(path, sep=sep, header=None, index_col=None)
+                yield df, file_name
+
     # iterate json
     @staticmethod
     def scan_json(indir:str):
         for root, dirs, files in os.walk(indir):
-            for file in files:
-                path = os.path.join(root, file)
+            for file_name in files:
+                path = os.path.join(root, file_name)
                 with open(path, 'r') as f:
                     data = json.load(f)
-                    yield (data, path)
+                    yield data, file_name
+
+    @staticmethod
+    def scan_json_record(indir:str):
+        data_iter = Utils.scan_json(indir)
+        for data, _ in data_iter:
+            for acc in data:
+                yield data[acc]
+
 
     @staticmethod
     def expand(seq_len:int, start:int, end:int, size:int):
@@ -30,7 +47,9 @@ class Utils:
             start < 0 or end < 0 or start > end:
             return None
         pos = 'end'
+        n = 0
         while (end - start) < size:
+            n += 1
             if pos == 'end':
                 if end + 1 < seq_len:
                     end += 1
@@ -39,6 +58,8 @@ class Utils:
                 if start - 1 >= 0:
                     start -= 1
                 pos = 'end'
+            if n > size * 3:
+                return None
         return start, end
 
     @staticmethod
@@ -49,10 +70,12 @@ class Utils:
         Note: end > start >= 0, size > end-start > 0
         '''
         if end-start <= size or start < 0 or end < 0 \
-            or start > end or size < 1:
+            or start > end or size <= 1:
             return None
         pos = 'end'
+        n = 0
         while (end - start) > size:
+            n += 1
             if pos == 'end':
                 if end - 1 > start:
                     end -= 1
@@ -61,4 +84,6 @@ class Utils:
                 if start + 1 < end:
                     start += 1
                 pos = 'end'
+            if n > size * 3:
+                return None
         return start, end
