@@ -32,8 +32,16 @@ class Utils:
         data_iter = Utils.scan_json(indir)
         for data, _ in data_iter:
             for acc in data:
-                yield data[acc]
+                yield acc, data[acc]
 
+    @staticmethod
+    def scan_json_seq(indir:str, key:str):
+        data_iter = Utils.scan_json(indir)
+        for data, _ in data_iter:
+            for acc in data:
+                items = data[acc][key]
+                for item in items.values():
+                    yield item['seq']
 
     @staticmethod
     def expand(seq_len:int, start:int, end:int, size:int):
