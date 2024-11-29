@@ -3,18 +3,20 @@ import torch.nn as nn
 
 class MyRNN(nn.Module):
     
-    def __init__(self, input_size):
+    def __init__(self, vocab_size):
         super().__init__()
-        embed_dim = 32
+        embedding_dim = 32
         rnn_hidden_size = 128
-        fc_hidden_size = 128
-        self.embedding = nn.Embedding(input_size, embed_dim, padding_idx=0) 
+        fc_size = 128
+        self.embedding = nn.Embedding(num_embeddings=vocab_size,
+            embedding_dim=embedding_dim, padding_idx=0) 
         # layer: long-short term memory
-        self.rnn = nn.LSTM(embed_dim, rnn_hidden_size, num_layers=2, batch_first=True)
+        self.rnn = nn.LSTM(input_size=embedding_dim, hidden_size=rnn_hidden_size,
+                num_layers=2, batch_first=True)
         # fully-connected layer
-        self.fc1 = nn.Linear(rnn_hidden_size, fc_hidden_size)
+        self.fc1 = nn.Linear(in_features=rnn_hidden_size, out_features=fc_size)
         self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(fc_hidden_size, 1)
+        self.fc2 = nn.Linear(fc_size, 1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, text, lengths):
