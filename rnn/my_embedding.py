@@ -19,20 +19,23 @@ class MyEmbedding:
         print(len(self.train_ds), len(self.valid_ds), len(self.test_ds))
         return self.train_ds, self.valid_ds, self.test_ds
 
-    def tokenizer_single(self, text:str):
-        return list(text)
-    
-    def tokenize(self, tokenizer=None):
+    def tokenizer(self, text:str, k:int):
+        if k == 1:
+            return list(text)
+        res = []
+        for i in range(0, len(text), k):
+            res.append(text[i:i+k])
+        return res
+
+    def tokenize(self, k:int=1):
         '''
         need self.train_ds only
         '''
-        if tokenizer is None:
-            tokenizer = self.tokenizer_single
         print("\n## Step 2 tokenization: unique tokens (words)...")
         # count tokens
         input_tokens, label_tokens = Counter(), Counter()
         for label, line in self.train_ds:
-            tokens = tokenizer(line)
+            tokens = self.tokenizer(line, k)
             # words in list type
             input_tokens.update(tokens)
             label_tokens.update([label,])

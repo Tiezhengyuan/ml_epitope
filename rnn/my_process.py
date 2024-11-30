@@ -18,15 +18,15 @@ class MyProcess:
         self.collate_fn = collate_fn
         self.num_epochs = 5 if num_epochs is None else num_epochs
     
-    def run(self, train_dataset, valid_dataset) -> tuple:
+    def run(self, train_ds, valid_ds) -> tuple:
         info = pd.DataFrame(np.zeros((self.num_epochs, 5), dtype=float), columns=\
             ['acc_train', 'loss_train', 'acc_valid', 'loss_valid', 'rec_valid'])
 
         ## Step 4: batching the datasets. shuffle data for each epoch
-        train_dl = DataLoader(train_dataset, batch_size=self.batch_size, \
+        train_dl = DataLoader(train_ds, batch_size=self.batch_size, \
             shuffle=True, collate_fn=self.collate_fn)
-        valid_dl = DataLoader(valid_dataset, batch_size=self.batch_size, \
-            shuffle=False, collate_fn=self.collate_fn)
+        valid_dl = DataLoader(valid_ds, batch_size=self.batch_size, \
+            shuffle=True, collate_fn=self.collate_fn)
 
         for epoch in range(self.num_epochs):
             acc_train, loss_train = self.train(train_dl)

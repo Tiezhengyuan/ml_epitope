@@ -159,3 +159,21 @@ class IsolateAA:
                     n += 1
                 m += 0
         return list(segment_seq)        
+
+    def random_size_seq(self, size:int):
+        # get index
+        ix = np.where(self.is_epi == 0)[0]
+
+        # try 10x times
+        segment_seq = set()
+        for item in self.epitopes:
+            m, n = 0, 0
+            while n <= 40 and m < 1000:
+                start = np.random.choice(ix)
+                end = start + size
+                if end < self.pro_len and self.is_epi[end] == 0:
+                    other_seq = self.pro_seq[start:end]
+                    segment_seq.add(other_seq)
+                    n += 1
+                m += 0
+        return list(segment_seq)     

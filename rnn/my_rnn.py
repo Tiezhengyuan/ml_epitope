@@ -3,35 +3,57 @@ import torch.nn as nn
 
 class MyRNN(nn.Module):
     
-    def __init__(self, vocab_size):
+    def __init__(self, vocab_size, embedding_dim):
         super().__init__()
-        embedding_dim = 32
-        rnn_hidden_size = 128
-        fc_size = 128
-        self.embedding = nn.Embedding(num_embeddings=vocab_size,
-            embedding_dim=embedding_dim, padding_idx=0) 
+        self.embedding = nn.Embedding(
+            num_embeddings = vocab_size,
+            embedding_dim = embedding_dim,
+            padding_idx = 0
+        ) 
         # layer: long-short term memory
-        self.rnn = nn.LSTM(input_size=embedding_dim, hidden_size=rnn_hidden_size,
-                num_layers=2, batch_first=True)
-        # fully-connected layer
-        self.fc1 = nn.Linear(in_features=rnn_hidden_size, out_features=fc_size)
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(fc_size, 1)
-        self.sigmoid = nn.Sigmoid()
+        hidden_size = 64 # hidden state is 32 at each step
+        self.rnn = nn.LSTM(
+            input_size = embedding_dim,
+            hidden_size = hidden_size,
+            num_layers = 2,
+            batch_first = True
+        )
+        # fully-connected layers
+        self.linear = nn.Sequential(
+            nn.Linear(
+                in_features = hidden_size,
+                out_features = 128
+            ),
+            nn.ReLU(),
+            nn.Linear(
+                in_features = 128,
+                out_features = 1
+            ),
+            nn.Sigmoid(),
+        )
 
     def forward(self, text, lengths):
-        out = self.embedding(text)
+        '''
+        text: batch_size x num_features
+        lengths: length = batch_size
+        '''
+        # batch_size x num_features x embedding_dim
+        input = self.embedding(text)
+
         # Packs a Tensor containing padded sequences of variable length.
         lengths = lengths.cpu().numpy()
-        out = nn.utils.rnn.pack_padded_sequence(out, lengths, \
-            batch_first=True, enforce_sorted=False)
-        # 
-        out, (hidden, cell) = self.rnn(out)
-        out = hidden[-1, :, :]
-        out = self.fc1(out)
-        out = self.relu(out)
-        out = self.fc2(out)
-        out = self.sigmoid(out)
-        return out
+        # output: sum of lengths x embedding_dim
+        input = nn.utils.rnn.pack_padded_sequence(
+            input = input,
+            lengths = lengths,
+            batch_first = True,
+            enforce_sorted = False
+        )
+        # out: sum of lengths x hidden_size
+        out, (hidden, cell) = self.rnn(input)
 
-   
+        # use the last hidden state
+        out = hidden[-1, :, :]
+        # fully-connected
+        out = self.linear(out)
+        return out
