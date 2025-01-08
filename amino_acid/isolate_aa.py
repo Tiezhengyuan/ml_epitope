@@ -146,13 +146,11 @@ class IsolateAA:
         size: in default epitopes is as long as non-epitopes
         '''
         segment_seq = {}
-        # try not more than 10 times of the number of 
-        # annotate epitopes in a protein
-        max_try = len(self.epitopes) * 10
         for item in self.epitopes:
             if size is None:
                 size = len(item['seq'])
             n, m = 0, 0
+            # try not more than 100times
             while n < num and m < 100:
                 start = np.random.choice(self.ix)
                 end = start + size
