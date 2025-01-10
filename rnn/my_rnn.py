@@ -32,16 +32,16 @@ class MyRNN(nn.Module):
             nn.Sigmoid(),
         )
 
-    def forward(self, text, lengths):
+    def forward(self, input:dict):
         '''
         text: batch_size x num_features
         lengths: length = batch_size
         '''
         # batch_size x num_features x embedding_dim
-        input = self.embedding(text)
+        input = self.embedding(input['texts'])
 
         # Packs a Tensor containing padded sequences of variable length.
-        lengths = lengths.cpu().numpy()
+        lengths = input['lengths'].cpu().numpy()
         # output: sum of lengths x embedding_dim
         input = nn.utils.rnn.pack_padded_sequence(
             input = input,

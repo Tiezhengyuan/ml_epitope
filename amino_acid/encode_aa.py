@@ -1,6 +1,6 @@
 import numpy as np
 from collections import Counter
-from constants import PROPERTY
+from .constants import PROPERTY
 
 class EncodeAA:
     def __init__(self):
@@ -54,7 +54,6 @@ class EncodeAA:
         res = np.round(res, decimals=3)
         if label is not None:
             res = np.append(res, label)
-
         return res
 
     def vector_1d(self, seq:str, label:int=None) -> np.array:

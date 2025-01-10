@@ -5,18 +5,24 @@ from torch.utils.data.dataset import random_split
 
 class MyEmbedding:
     def __init__(self, data:list):
+        '''
+        args: data: list type. element is tuple (<label>, <text>)
+        '''
         self.data = data
         self.train_ds, self.valid_ds, self.test_ds = None, None, None
     
     
     def split(self):
+        '''
+        split data into train:validate:test=.6:.2:.2
+        '''
         num_train = int(len(self.data)*.6)
         num_valid = int(len(self.data)*.2)
         num_test = len(self.data) - num_train - num_valid
         self.train_ds, self.valid_ds, self.test_ds = random_split(
             self.data, [num_train, num_valid, num_test])
-        print(self.train_ds[0])
-        print(len(self.train_ds), len(self.valid_ds), len(self.test_ds))
+        print('example element of data: ', self.train_ds[0])
+        print('split data: ', len(self.train_ds), len(self.valid_ds), len(self.test_ds))
         return self.train_ds, self.valid_ds, self.test_ds
 
     def tokenizer(self, text:str, k:int):
