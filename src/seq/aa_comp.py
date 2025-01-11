@@ -7,9 +7,10 @@ import pandas as pd
 import json
 from collections import Counter
 
-from utils import Utils
-from isolate_aa import IsolateAA
-from constants import AA
+from .constants import AA
+from .utils import Utils
+from .isolate_aa import IsolateAA
+from .encode_aa import EncodeAA
 
 class AAComp:
 
@@ -29,10 +30,10 @@ class AAComp:
                 }
                 num_pro += 1
                 num_epi += len(data[acc]['epitopes'])
-                if len((aa_data[acc]['other_seq']) == len(pro_seq):
-                    print(acc)
-                    print(data[acc]['epitopes'])
-                    print(aa_data[acc])
+                # if len((aa_data[acc]['other_seq']) == len(pro_seq):
+                #     print(acc)
+                #     print(data[acc]['epitopes'])
+                #     print(aa_data[acc])
         print(f"Number of proteins = {num_pro}")
         print(f"Number of epitopes = {num_epi}")
         return aa_data, num_pro, num_epi
@@ -89,4 +90,35 @@ class AAComp:
                     break
             hydrophobicity.append(hydro)
         return hydrophobicity
-            
+    
+    @staticmethod
+    def cal_phyche(df):
+        '''
+        physcial chemical properties and export to csv
+        '''
+        encoder = EncodeAA()
+        dfv = df.apply(lambda x: encoder.physical_chemical(x[0], x[1]), axis=1, result_type='expand')
+        dfv = dfv.fillna(0)
+        # 15 features
+        print('shape:', dfv.shape)
+        print(dfv.head())
+        # export
+        outfile = '/home/yuan/results/epitope/epi_physical_chemical.txt'
+        dfv.to_csv(outfile, header=True, index=False, sep='\t')
+        return outfile
+
+    @staticmethod
+    def cal_freq_aa(df):
+        '''
+        frequency of amino acids and export to csv
+        '''
+        encoder = EncodeAA()
+        dfv = df.apply(lambda x: encoder.frequency_aa(x[0], x[1]), axis=1, result_type='expand')
+        dfv = dfv.fillna(0)
+        # >500 features
+        print('shape:', dfv.shape)
+        print(dfv.head())
+        # export
+        outfile = '/home/yuan/results/epitope/epi_frequency_aa.txt'
+        dfv.to_csv(outfile, header=True, index=False, sep='\t')
+        return outfile

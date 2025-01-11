@@ -3,7 +3,7 @@ import numpy as np
 import json
 from collections import Counter
 
-from utils import Utils
+from .utils import Utils
 
 
 class IsolateAA:
