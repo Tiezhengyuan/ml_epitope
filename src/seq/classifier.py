@@ -28,8 +28,8 @@ class Classifier:
         prepare y ~ X
         '''
         # get X and y
-        X = np.array(df.iloc[:,:-1], dtype=np.float16)
-        y = np.array(df.iloc[:,-1], dtype=np.float16)
+        X = df.iloc[:,2:], dtype=np.float16
+        y = df.iloc[:,1], dtype=np.float16
 
         # normalization X
         scaler = StandardScaler()
@@ -46,14 +46,10 @@ class Classifier:
         print('test_data: ', X_test.shape, y_test.shape)
         return X_train, X_test, y_train, y_test
     
-    def train_rf(self, df):
+    def train_rf(self, X_train, y_train):
         '''
         random forest model
         '''
-        # prepare X and y
-        X_train, X_test, y_train, y_test = self.xy(df)
-        
-        # RF model
         model = RandomForestClassifier(
             n_estimators=500,
             max_leaf_nodes=16,
@@ -61,5 +57,5 @@ class Classifier:
             random_state=42
         )
         # train
-        model.fit(X_train, y_train)
-        return model, X_test, y_test
+        model.fit(np.array(X_train), np.array(y_train))
+        return model

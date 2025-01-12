@@ -12,6 +12,29 @@ class EncodeAA:
         self.pz = {s:PROPERTY[s]['polarizability'] for s in PROPERTY}
         self.vdw = {s:PROPERTY[s]['van_der_Waals_volume'] for s in PROPERTY}
         self.aa = list(PROPERTY)
+        self.aa2 = self.aa_2()
+        # self.aa3 = self.aa_3()
+
+    def aa_2(self):
+        '''
+        2 AA
+        '''
+        res = []
+        for a in self.aa:
+            for b in self.aa:
+                res.append(a+b)
+        return res
+
+    def aa_3(self):
+        '''
+        3 AA
+        '''
+        res = []
+        for a in self.aa:
+            for b in self.aa:
+                for c in self.aa:
+                    res.append(a+b+c)
+        return res
 
     def hydrophobicity_ph7(self, seq:str):
         res = [self.hydro_ph7.get(s, 0) for s in seq]
@@ -33,20 +56,20 @@ class EncodeAA:
         res = [self.vdw.get(s, 0) for s in seq]
         return res
 
-    def freq_1aa(self, seq:str) -> pd.Series:
+    def freq_1aa(self, seq:str) -> dict:
         '''
         frequency of 2-AA
         '''
         counts = Counter(seq)
         n = len(seq)
-        freq = [counts[i]/n for i in self.aa]
-        freq = pd.Series(freq, index=[f"freq_{i}" for i in self.aa])
+        freq = {k:round(v/n,3) for k,v in counts.items()}
         return freq
     
-    def freq_2aa(self, seq:str) -> pd.Series:
+    def freq_2aa(self, seq:str) -> dict:
         '''
         frequency of 2-AA
         '''
+        n = len(seq)
         freq = {}
         for i in range(0, len(seq)-1):
             aa = seq[i:i+2]
@@ -55,10 +78,8 @@ class EncodeAA:
                 freq[key] = 1
             else:
                 freq[key] += 1
-        freq = pd.Series(freq)/len(seq)
+        freq = {k:round(v/n, 3) for k,v in freq.items()}
         return freq
-
-
 
 #################
     def physical_chemical(self, seq:str, label:int=None) -> pd.Series:
@@ -82,24 +103,40 @@ class EncodeAA:
             index=[f"variance_{i}" for i in names])
 
         # outcome
-        res = pd.concat([phyche_mean, phyche_median, phyche_var])
+        res = pd.Series([seq, label], index=['seq', 'label'])
+        res = pd.concat([res, phyche_mean, phyche_median, phyche_var])
         res = res.round(decimals=3)
-        if label is not None:
-            res['label'] = label
         return res
 
-    def frequency_aa(self, seq:str, label:int=None) -> pd.Series:
+    def frequency_aa(self, seq:str, label:int=None) -> list:
         '''
         frequency of amino acids
         '''
+        res = [seq, label, ]
+        # single
         freq1a = self.freq_1aa(seq)
+        for k in self.aa:
+            v = freq1a.get(k, 0)
+            res.append(str(v))
+        # two AA
         freq2a = self.freq_2aa(seq)
+        for k in self.aa2:
+            v = freq2a.get(k, 0)
+            res.append(str(v))
+        return res
 
-        # outcome
-        res = pd.concat([freq1a, freq2a])
-        res = res.round(decimals=3)
-        if label is not None:
-            res['label'] = label
+    def existing(self, seq:str, label:int=None) -> list:
+        '''
+        if an AA is existing
+        binary: 1 or 0
+        '''
+        res = [seq, label]
+        for pool in [self.aa, self.aa2]:
+            for i in pool:
+                if i in seq:
+                    res.append(str(1))
+                else:
+                    res.append(str(0))
         return res
 
     def vector_1d(self, seq:str, label:int=None) -> np.array:

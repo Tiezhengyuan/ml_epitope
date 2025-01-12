@@ -108,17 +108,37 @@ class AAComp:
         return outfile
 
     @staticmethod
-    def cal_freq_aa(df):
+    def cal_freq(df):
         '''
         frequency of amino acids and export to csv
         '''
         encoder = EncodeAA()
-        dfv = df.apply(lambda x: encoder.frequency_aa(x[0], x[1]), axis=1, result_type='expand')
-        dfv = dfv.fillna(0)
-        # >500 features
-        print('shape:', dfv.shape)
-        print(dfv.head())
-        # export
+        col = ['seq', 'label'] + [f"freq_{i}" for i in encoder.aa] \
+            + [f"freq_{i}" for i in encoder.aa2]
+
         outfile = '/home/yuan/results/epitope/epi_frequency_aa.txt'
-        dfv.to_csv(outfile, header=True, index=False, sep='\t')
+        with open(outfile, 'w') as f:
+            f.write('\t'.join(col) + '\n')
+            for row in df.itertuples():
+                # print(row)
+                s = encoder.frequency_aa(row._1, row._2)
+                f.write('\t'.join(s) + '\n')
+        return outfile
+
+    @staticmethod
+    def has_aa(df):
+        '''
+        detect if AA is existing export to csv
+        '''
+        encoder = EncodeAA()
+        col = ['seq', 'label'] + [f"has_{i}" for i in encoder.aa] \
+            + [f"has_{i}" for i in encoder.aa2]
+
+        outfile = '/home/yuan/results/epitope/epi_aa_existing.txt'
+        with open(outfile, 'w') as f:
+            f.write('\t'.join(col) + '\n')
+            for row in df.itertuples():
+                # print(row)
+                s = encoder.existing(row._1, row._2)
+                f.write('\t'.join(s) + '\n')
         return outfile
