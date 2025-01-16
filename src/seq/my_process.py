@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import precision_score, recall_score, f1_score, matthews_corrcoef
 
-from my_dataset import MyDataset
+from .my_dataset import MyDataset
 
 
 class MyProcess:
@@ -76,9 +76,9 @@ class MyProcess:
                 total_acc += ((pred>=0.5).float() == label_batch).float().sum().item()
                 total_loss += loss.item()*label_batch.size(0)
                 # 
-                _np_target = label_batch.view(-1).cpu().numpy()
-                _np_pred = pred.view(-1).cpu().numpy()
-                _np_pred = (_np_pred >= .5).astype(int)
+                _np_target = label_batch.view(-1).cpu()
+                _np_pred = pred.view(-1).cpu()
+                _np_pred = (_np_pred >= .5).numpy().astype(int)
                 np_target = np.concatenate([np_target, _np_target])
                 np_pred = np.concatenate([np_pred, _np_pred])
         recall = recall_score(np_target, np_pred, average = 'macro', zero_division=np.nan)
