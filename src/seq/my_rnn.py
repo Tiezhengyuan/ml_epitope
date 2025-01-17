@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-class MyRNN(nn.Module):
+class MyRnn(nn.Module):
     
     def __init__(self, vocab_size, embedding_dim):
         super().__init__()
@@ -32,16 +32,17 @@ class MyRNN(nn.Module):
             nn.Sigmoid(),
         )
 
-    def forward(self, text, lengths):
+    def forward(self, input_batch:dict):
         '''
         text: batch_size x num_features
         lengths: length = batch_size
         '''
+        lengths = input_batch['lengths'].cpu()
+        # lengths = lengths.cpu().detach().numpy()
         # batch_size x num_features x embedding_dim
-        input = self.embedding(text)
+        input = self.embedding(input_batch['texts'])
 
         # Packs a Tensor containing padded sequences of variable length.
-        lengths = lengths.cpu().numpy()
         # output: sum of lengths x embedding_dim
         input = nn.utils.rnn.pack_padded_sequence(
             input = input,

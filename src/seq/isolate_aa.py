@@ -3,7 +3,7 @@ import numpy as np
 import json
 from collections import Counter
 
-from utils import Utils
+from .utils import Utils
 
 
 class IsolateAA:
@@ -12,9 +12,7 @@ class IsolateAA:
         self.pro_seq = record['pro_seq']
         self.epitopes = record['epitopes'].values()
         self.pro_len = len(record['pro_seq'])
-        self.filter_epitopes()
 
-    def filter_epitopes(self):
         # retrieve epitope sequence and non-epitope seq
         self.pro_aa = np.array(list(self.pro_seq))
         self.is_epi = np.zeros(self.pro_len)
@@ -22,6 +20,8 @@ class IsolateAA:
             start = int(item['start']) - 1
             end = int(item['end'])
             self.is_epi[start:end] = 1
+        # index of non-epitope
+        self.ix = np.where(self.is_epi == 0)[0]
 
     def get_epi_seq(self):
         return ''.join(self.pro_aa[self.is_epi==1])
@@ -120,8 +120,7 @@ class IsolateAA:
             or number is less then the required
         '''
         # get index
-        ix = np.where(self.is_epi == 0)[0]
-        m = len(ix)/size
+        m = len(self.ix)/size
         if m > num:
             if m > num * 2:
                 if m > num * 4:
@@ -141,39 +140,25 @@ class IsolateAA:
             n += 1
         return list(segment_seq)
     
-    def random_seq(self):
-        # get index
-        ix = np.where(self.is_epi == 0)[0]
-
-        # try 10x times
-        segment_seq = set()
+    def random_size_seq(self, num:int, size:int=None):
+        '''
+        num: given one epitopes, get num of non-epitopes
+        size: in default epitopes is as long as non-epitopes
+        '''
+        segment_seq = {}
         for item in self.epitopes:
-            size = len(item['seq'])
-            m, n = 0, 0
-            while n <= 40 and m < 1000:
-                start = np.random.choice(ix)
+            if size is None:
+                size = len(item['seq'])
+            n, m = 0, 0
+            # try not more than 100times
+            while n < num and m < 100:
+                start = np.random.choice(self.ix)
                 end = start + size
-                if end < self.pro_len and self.is_epi[end] == 0:
+                # no overlapping between epitope and non-epitope
+                if end < self.pro_len and sum(self.is_epi[start:end]) == 0:
                     other_seq = self.pro_seq[start:end]
-                    segment_seq.add(other_seq)
-                    n += 1
-                m += 0
-        return list(segment_seq)        
-
-    def random_size_seq(self, size:int):
-        # get index
-        ix = np.where(self.is_epi == 0)[0]
-
-        # try 10x times
-        segment_seq = set()
-        for item in self.epitopes:
-            m, n = 0, 0
-            while n <= 40 and m < 1000:
-                start = np.random.choice(ix)
-                end = start + size
-                if end < self.pro_len and self.is_epi[end] == 0:
-                    other_seq = self.pro_seq[start:end]
-                    segment_seq.add(other_seq)
-                    n += 1
-                m += 0
-        return list(segment_seq)     
+                    if other_seq not in segment_seq:
+                        segment_seq[other_seq] = 1
+                        n += 1
+                m += 1
+        return list(segment_seq)
