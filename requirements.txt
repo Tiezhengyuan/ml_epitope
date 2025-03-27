@@ -11,3 +11,4 @@ torch==2.0.0
 torchtext==0.15.1
 torchvision==0.20.1+cu121
 torchaudio==2.5.1+cu121
+mysql-connector-python==9.2.0
