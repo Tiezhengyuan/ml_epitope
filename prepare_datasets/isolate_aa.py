@@ -3,15 +3,15 @@ import numpy as np
 import json
 from collections import Counter
 
-from .utils import Utils
+from utils import Utils
 
 
 class IsolateAA:
 
     def __init__(self, record:dict):
-        self.pro_seq = record['pro_seq']
-        self.epitopes = record['epitopes'].values()
-        self.pro_len = len(record['pro_seq'])
+        self.pro_seq = record.get('pro_seq', '')
+        self.epitopes = record['epitopes']
+        self.pro_len = len(self.pro_seq)
 
         # retrieve epitope sequence and non-epitope seq
         self.pro_aa = np.array(list(self.pro_seq))

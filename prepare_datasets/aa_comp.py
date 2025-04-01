@@ -7,10 +7,10 @@ import pandas as pd
 import json
 from collections import Counter
 
-from .constants import AA
-from .utils import Utils
-from .isolate_aa import IsolateAA
-from .encode_aa import EncodeAA
+from constants import AA
+from utils import Utils
+from isolate_aa import IsolateAA
+from encode_aa import EncodeAA
 
 class AAComp:
 
@@ -92,23 +92,27 @@ class AAComp:
         return hydrophobicity
     
     @staticmethod
-    def cal_phyche(df):
+    def cal_phyche(outdir, df):
         '''
         physcial chemical properties and export to csv
         '''
         encoder = EncodeAA()
-        dfv = df.apply(lambda x: encoder.physical_chemical(x[0], x[1]), axis=1, result_type='expand')
+        dfv = df.apply(
+            lambda x: encoder.physical_chemical(x[0], x[1]),
+            axis=1,
+            result_type='expand'
+        )
         dfv = dfv.fillna(0)
         # 15 features
         print('shape:', dfv.shape)
         print(dfv.head())
         # export
-        outfile = '/home/yuan/results/epitope/epi_physical_chemical.txt'
+        outfile = os.path.join(outdir, 'epi_physical_chemical.txt')
         dfv.to_csv(outfile, header=True, index=False, sep='\t')
         return outfile
 
     @staticmethod
-    def cal_freq(df):
+    def cal_freq(outdir, df):
         '''
         frequency of amino acids and export to csv
         '''
@@ -116,7 +120,7 @@ class AAComp:
         col = ['seq', 'label'] + [f"freq_{i}" for i in encoder.aa] \
             + [f"freq_{i}" for i in encoder.aa2]
 
-        outfile = '/home/yuan/results/epitope/epi_frequency_aa.txt'
+        outfile = os.path.join(outdir, 'epi_frequency_aa.txt')
         with open(outfile, 'w') as f:
             f.write('\t'.join(col) + '\n')
             for row in df.itertuples():
@@ -126,7 +130,7 @@ class AAComp:
         return outfile
 
     @staticmethod
-    def has_aa(df):
+    def has_aa(outdir, df):
         '''
         detect if AA is existing export to csv
         '''
@@ -134,7 +138,7 @@ class AAComp:
         col = ['seq', 'label'] + [f"has_{i}" for i in encoder.aa] \
             + [f"has_{i}" for i in encoder.aa2]
 
-        outfile = '/home/yuan/results/epitope/epi_aa_existing.txt'
+        outfile = os.path.join(outdir, 'epi_aa_existing.txt')
         with open(outfile, 'w') as f:
             f.write('\t'.join(col) + '\n')
             for row in df.itertuples():

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 
-from .constants import PROPERTY
+from constants import PROPERTY
 
 class EncodeAA:
     def __init__(self):

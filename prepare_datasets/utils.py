@@ -16,6 +16,35 @@ class Utils:
                 path = os.path.join(root, file_name)
                 df = pd.read_csv(path, sep=sep, header=None, index_col=None)
                 yield df, file_name
+    
+    @staticmethod
+    def get_data(infile=None):
+        if infile is None:
+            infile = '/home/yuan/bio/ml_epitope/data/epitopes_4.json'
+        with open(infile, 'r') as f:
+            data=json.load(f)
+            for acc in data:
+                yield acc, data[acc]
+
+    @staticmethod
+    def get_epitopes(infile=None):
+        if infile is None:
+            infile = '/home/yuan/bio/ml_epitope/data/epitopes_4.json'
+        with open(infile, 'r') as f:
+            data=json.load(f)
+            for acc in data:
+                for epitope in data[acc]['epitopes']:
+                    yield acc, epitope
+
+    @staticmethod
+    def get_epitope_seq(infile=None):
+        if infile is None:
+            infile = '/home/yuan/bio/ml_epitope/data/epitopes_4.json'
+        with open(infile, 'r') as f:
+            data=json.load(f)
+            for acc in data:
+                for epitope in data[acc]['epitopes']:
+                    yield epitope['seq']
 
     # iterate json
     @staticmethod
