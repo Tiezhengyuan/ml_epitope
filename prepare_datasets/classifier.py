@@ -9,27 +9,28 @@ from sklearn.ensemble import RandomForestClassifier
 class Classifier:
     def __init__(self):
         self.df = None
-    
+
     def get_df(self, infile, part:bool=False) -> pd.DataFrame:
-        df = pd.read_csv(infile, sep='\t', header=0, index_col=None)
+        self.df = pd.read_csv(infile, sep='\t', header=0, index_col=None)
         # balance the number of epitopes and non-epitopes
         # shuffle rows
-        df = df.sample(frac=1)
+        self.df = self.df.sample(frac=1)
         # trim data
         if part is True:
-            df = df.iloc[:10_000,:]
+            self.df = self.df.iloc[:10_000,:]
         # add label
-        df['label'] = df['label'].map({'epitope':1, 'other': 0})
-        print('input data:', df.shape)
-        return df
+        labels = {'epitope': 1, 'other': 0, 'random': 0, 'shuffle': 0}
+        self.df['label'] = self.df['label'].map(labels)
+        print('input data:', self.df.shape)
+        return self.df
     
-    def xy(self, df):
+    def xy(self):
         '''
         prepare y ~ X
         '''
         # get X and y
-        X = df.iloc[:,2:], dtype=np.float16
-        y = df.iloc[:,1], dtype=np.float16
+        X = np.array(self.df.iloc[:,2:], dtype=np.float16)
+        y = np.array(self.df.iloc[:,1], dtype=np.float16)
 
         # normalization X
         scaler = StandardScaler()

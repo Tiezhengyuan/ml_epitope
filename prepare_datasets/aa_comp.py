@@ -87,9 +87,41 @@ class AAComp:
                     break
             hydrophobicity.append(hydro)
         return hydrophobicity
-    
+
+
+################################
     @staticmethod
-    def cal_phyche(outdir, df):
+    def run(infile):
+        outdir = os.path.dirname(infile)
+        prefix = os.path.splitext(os.path.basename(infile))[0]
+
+        # read df: default two columns
+        df = pd.read_csv(infile, sep='\t', header=None, index_col=None)
+        print(df.shape)
+
+        # physcial chemical properties
+        df1 = AAComp.cal_phyche(outdir, df, prefix)
+        print('phy-chem:', df1.shape)
+
+        # frequency of AA
+        df2 = AAComp.cal_freq(outdir, df, prefix)
+        df2 = df2.iloc[:, 2:]
+        print('freq AA:', df2.shape)
+
+        # if AA existing
+        df3 = AAComp.has_aa(outdir, df, prefix)
+        df3 = df3.iloc[:, 2:]
+        print('if AA: ', df3.shape)
+
+        # concatenate
+        df = pd.concat([df1, df2, df3], axis=1)
+        print('combined', df.shape)
+        outfile = os.path.join(outdir, f'{prefix}_combined_features.txt')
+        df.to_csv(outfile, header=True, index=False, sep='\t')
+        print("Combine the above df and export to ", outfile)
+
+    @staticmethod
+    def cal_phyche(outdir, df, prefix):
         '''
         physcial chemical properties and export to csv
         '''
@@ -102,14 +134,14 @@ class AAComp:
         dfv = dfv.fillna(0)
         # 15 features
         print('shape:', dfv.shape)
-        print(dfv.head())
         # export
-        outfile = os.path.join(outdir, 'epi_physical_chemical.txt')
+        outfile = os.path.join(outdir, f'{prefix}_physical_chemical.txt')
         dfv.to_csv(outfile, header=True, index=False, sep='\t')
-        return outfile
+        print(outfile)
+        return dfv
 
     @staticmethod
-    def cal_freq(outdir, df):
+    def cal_freq(outdir, df, prefix):
         '''
         frequency of amino acids and export to csv
         '''
@@ -117,17 +149,19 @@ class AAComp:
         col = ['seq', 'label'] + [f"freq_{i}" for i in encoder.aa] \
             + [f"freq_{i}" for i in encoder.aa2]
 
-        outfile = os.path.join(outdir, 'epi_frequency_aa.txt')
+        outfile = os.path.join(outdir, f'{prefix}_frequency_aa.txt')
         with open(outfile, 'w') as f:
             f.write('\t'.join(col) + '\n')
             for row in df.itertuples():
                 # print(row)
                 s = encoder.frequency_aa(row._1, row._2)
                 f.write('\t'.join(s) + '\n')
-        return outfile
+        print(outfile)
+        dfv = pd.read_csv(outfile, sep='\t', header=0, index_col=None)
+        return dfv
 
     @staticmethod
-    def has_aa(outdir, df):
+    def has_aa(outdir, df, prefix):
         '''
         detect if AA is existing export to csv
         '''
@@ -135,11 +169,14 @@ class AAComp:
         col = ['seq', 'label'] + [f"has_{i}" for i in encoder.aa] \
             + [f"has_{i}" for i in encoder.aa2]
 
-        outfile = os.path.join(outdir, 'epi_aa_existing.txt')
+        outfile = os.path.join(outdir, f'{prefix}_aa_existing.txt')
         with open(outfile, 'w') as f:
             f.write('\t'.join(col) + '\n')
             for row in df.itertuples():
                 # print(row)
                 s = encoder.existing(row._1, row._2)
                 f.write('\t'.join(s) + '\n')
-        return outfile
+        print(outfile)
+        dfv = pd.read_csv(outfile, sep='\t', header=0, index_col=None)
+        return dfv
+

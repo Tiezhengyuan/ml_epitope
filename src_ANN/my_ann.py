@@ -58,8 +58,7 @@ class MyAnn:
         print(self.model.summary())
     
     def train(self, epochs=None):
-        if epochs is not None:
-            self.epochs = epochs
+        self.epochs = 10 if epochs is None else epochs 
         # loss_fn = tf.keras.losses.sparse_categorical_crossentropy
         optim = tf.keras.optimizers.Adam(learning_rate=0.001)
         self.model.compile(
