@@ -3,6 +3,8 @@ logs/
 models/
 torch_hub/
 ~*
+src_llm/_*
+src_llm/unsloth_compiled_cache
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

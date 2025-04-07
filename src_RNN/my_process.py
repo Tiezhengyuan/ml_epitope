@@ -1,3 +1,6 @@
+'''
+train RNN model
+'''
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -5,18 +8,20 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import precision_score, recall_score, f1_score, matthews_corrcoef
 
-from .my_dataset import MyDataset
+from my_dataset import MyDataset
 
 
 class MyProcess:
     loss_fn = nn.BCELoss()
     batch_size = 32
 
-    def __init__(self, model, collate_fn, num_epochs=None):
+    def __init__(self, model, collate_fn, num_epochs=None, loss_fn=None):
         self.model = model
-        self.optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        self.optimizer = torch.optim.Adam(model.parameters(), lr=5e-4)
         self.collate_fn = collate_fn
         self.num_epochs = 5 if num_epochs is None else num_epochs
+        if loss_fn is not None:
+            self.loss_fn = loss_fn
     
     def run(self, train_ds, valid_ds) -> tuple:
         info = pd.DataFrame(
@@ -26,10 +31,18 @@ class MyProcess:
 
         # build dataloader, convert text into vector
         # batching the datasets. shuffle data for each epoch
-        train_dl = DataLoader(train_ds, batch_size=self.batch_size, \
-            shuffle=True, collate_fn=self.collate_fn)
-        valid_dl = DataLoader(valid_ds, batch_size=self.batch_size, \
-            shuffle=True, collate_fn=self.collate_fn)
+        train_dl = DataLoader(
+            train_ds,
+            batch_size=self.batch_size,
+            shuffle=True,
+            collate_fn=self.collate_fn
+        )
+        valid_dl = DataLoader(
+            valid_ds,
+            batch_size=self.batch_size,
+            shuffle=True,
+            collate_fn=self.collate_fn
+        )
 
         for epoch in range(self.num_epochs):
             # training
@@ -37,7 +50,8 @@ class MyProcess:
             # validation
             acc_valid, loss_valid, rec_valid = self.evaluate(valid_dl)
             # output of one epoch
-            print(f'Epoch {epoch} acc: {acc_train:.4f} val_acc: {acc_valid:.4f}, val_recall: {rec_valid:.4f}')
+            print(f"Epoch {epoch} acc: {acc_train:.4f}", end='; ')
+            print(f"val_acc: {acc_valid:.4f}, val_recall: {rec_valid:.4f}")
             info.loc[epoch] = [acc_train, loss_train, acc_valid, loss_valid, rec_valid]
         return self.model, info
 
@@ -81,7 +95,12 @@ class MyProcess:
                 _np_pred = (_np_pred >= .5).numpy().astype(int)
                 np_target = np.concatenate([np_target, _np_target])
                 np_pred = np.concatenate([np_pred, _np_pred])
-        recall = recall_score(np_target, np_pred, average = 'macro', zero_division=np.nan)
+        recall = recall_score(
+            np_target,
+            np_pred,
+            average = 'macro',
+            zero_division=np.nan
+        )
         acc = total_acc/len(dataloader.dataset)
         loss = total_loss/len(dataloader.dataset)
         return acc, loss, recall
@@ -100,8 +119,12 @@ class MyProcess:
         labels = [0] * len(texts)
         
         dataset = MyDataset(texts, labels)
-        dataloader = DataLoader(dataset, batch_size=self.batch_size,
-                shuffle=False, collate_fn=self.collate_fn)
+        dataloader = DataLoader(
+            dataset,
+            batch_size=self.batch_size,
+            shuffle=False,
+            collate_fn=self.collate_fn
+        )
         self.model.eval()
         with torch.no_grad():
             for input_batch in dataloader:

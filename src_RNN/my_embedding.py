@@ -1,5 +1,9 @@
+'''
+text representation for RNN traing
+'''
 from collections import Counter, OrderedDict
 import re
+# torchtext=0.18.0
 from torchtext.vocab import vocab
 from torch.utils.data.dataset import random_split
 
@@ -20,7 +24,9 @@ class MyEmbedding:
         num_valid = int(len(self.data)*.2)
         num_test = len(self.data) - num_train - num_valid
         self.train_ds, self.valid_ds, self.test_ds = random_split(
-            self.data, [num_train, num_valid, num_test])
+            self.data,
+            [num_train, num_valid, num_test]
+        )
         print('example element of data: ', self.train_ds[0])
         print('split data: ', len(self.train_ds), len(self.valid_ds), len(self.test_ds))
         return self.train_ds, self.valid_ds, self.test_ds
@@ -70,18 +76,27 @@ class MyEmbedding:
         '''
         print("\n## Step 3 encoding: encoding each unique token into integers...")
         # Convert count value to index value (ranking)
-        self.input_vocab = vocab(self.input_ordered_dict)
-        self.input_vocab.insert_token("<pad>", 0)
-        self.input_vocab.insert_token("<unk>", 1)
+        self.input_vocab = vocab(
+            self.input_ordered_dict,
+            specials=['<unk>', '<pad>', '<bos>', '<eos>'],
+            special_first=True,
+        )
+        # self.input_vocab.insert_token("<pad>", 0)
+        # self.input_vocab.insert_token("<unk>", 1)
         # default token is "<unk>"
-        self.input_vocab.set_default_index(1)
+        self.input_vocab.set_default_index(self.input_vocab['<unk>'])
         
         # labels
-        self.label_vocab = vocab(self.label_ordered_dict)
+        self.label_vocab = vocab(
+            self.label_ordered_dict,
+            specials=['<unk>', '<pad>', '<bos>', '<eos>'],
+            special_first=True,
+        )
         # print(label_ordered_dict)
-        self.label_vocab.insert_token("<pad>", 0)
-        self.label_vocab.insert_token("<unk>", 1)
+        # self.label_vocab.insert_token("<pad>", 0)
+        # self.label_vocab.insert_token("<unk>", 1)
         # default token is "<unk>"
-        self.label_vocab.set_default_index(1)
-        
+        # self.label_vocab.set_default_index(1)
+        self.label_vocab.set_default_index(self.input_vocab['<unk>'])
+
         return self.input_vocab, self.label_vocab
