@@ -180,3 +180,53 @@ class AAComp:
         dfv = pd.read_csv(outfile, sep='\t', header=0, index_col=None)
         return dfv
 
+    @staticmethod
+    def represent_seq_1(infile):
+        outdir = os.path.dirname(infile)
+        prefix = os.path.splitext(os.path.basename(infile))[0]
+
+        # read df: default two columns
+        df = pd.read_csv(infile, sep='\t', header=None, index_col=None)
+        df.columns = ['seq', 'label']
+        print(df.shape)
+
+        encoder = EncodeAA()
+        phy_che = df['seq'].map(lambda x: '. '.join(encoder.physcial_chemical(x)))
+        dfv= pd.DataFrame({
+            'text': phy_che,
+            'label': df['label'],
+        })
+        print(dfv)
+
+        # export
+        outfile = os.path.join(outdir, f'{prefix}_physical_chemical_seq.csv')
+        dfv.to_csv(outfile, header=True, index=False)
+        print(outfile)
+
+    @staticmethod
+    def represent_seq_2(infile):
+        outdir = os.path.dirname(infile)
+        prefix = os.path.splitext(os.path.basename(infile))[0]
+
+        # read df: default two columns
+        df = pd.read_csv(infile, sep='\t', header=None, index_col=None)
+        df.columns = ['seq', 'label']
+        print(df.shape)
+
+        encoder = EncodeAA()
+        # phy_che = df['seq'].map(encoder.physical_chemical_text)
+        smiles = df['seq'].map(encoder.aa_smiles)
+        dfv= pd.DataFrame({
+            'seq': df['seq'],
+            'text': smiles,
+            'label': df['label'],
+        })
+        dfv=dfv.dropna()
+        dfv=dfv[dfv['text'].str.len()>=6]
+        print(dfv.shape)
+        print(dfv)
+
+        # export
+        outfile = os.path.join(outdir, f'{prefix}_physical_chemical_seq.csv')
+        dfv.to_csv(outfile, header=True, index=False)
+        print(outfile)

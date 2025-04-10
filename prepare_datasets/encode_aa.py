@@ -1,8 +1,9 @@
+import re
 import numpy as np
 import pandas as pd
 from collections import Counter
 
-from constants import PROPERTY
+from constants import *
 
 class EncodeAA:
     def __init__(self):
@@ -14,6 +15,11 @@ class EncodeAA:
         self.aa = list(PROPERTY)
         self.aa2 = self.aa_2()
         # self.aa3 = self.aa_3()
+        self.smiles = {a:' '.join(list(b)) for a,b in SMILES_1.items()}
+        # for a,b in SMILES_1.items():
+        #     b = re.sub(r'\(=O\)|\(=N\)|\(=CN2\)|\(|\)', '', b)
+        #     self.smiles[a] = re.sub(r'\d|\=', '', b)
+        print(self.smiles)
 
     def aa_2(self):
         '''
@@ -34,6 +40,32 @@ class EncodeAA:
             for b in self.aa:
                 for c in self.aa:
                     res.append(a+b+c)
+        return res
+
+    def aa_smiles(self, seq:str):
+        '''
+        represent aa by smiles
+        '''
+        # only consider 20 AA, remove X unknown residues
+        if not set(seq).difference(set(self.smiles)):
+            seq = seq.replace('G', '')
+            smiles = [self.smiles[s] for s in seq if s in self.smiles]
+            _s = str(' '.join(smiles))
+            _s = re.sub(r'^[A-Z| ]', '', _s)
+            return _s
+
+    def physcial_chemical(self, seq:str):
+        res = [
+            ['sequencing is',] + list(seq),
+            ['hydrophobicity at PH7 is',] + [str(self.hydro_ph7.get(s, 0)) for s in seq],
+            ['hydrophobicity is',] + [str(self.hydro.get(s, 0)) for s in seq],
+            ['polarity is',] + [str(self.polar.get(s, 0)) for s in seq],
+            ['polarizability is',] + [str(self.pz.get(s, 0)) for s in seq],
+            ['van der Waals_volume is',] + [str(self.vdw.get(s, 0)) for s in seq],
+        ]
+        res = [' '.join(i) for i in res]
+        if not res:
+            print(seq)
         return res
 
     def hydrophobicity_ph7(self, seq:str):
@@ -82,6 +114,25 @@ class EncodeAA:
         return freq
 
 #################
+    def physical_chemical_text(self, seq:str) -> pd.Series:
+        '''
+        physical chemical properties given a epitope sequence
+        '''
+        # physical-chemical properties
+        # names = ['hydrophobicity at PH7', 
+        # 'hydrophobicity', 'polarity', \
+        #     'polarizability', 'van der Waals volume']
+        phyche = [
+            # self.hydrophobicity_ph7(seq),
+            # self.hydrophobicity(seq),
+            # self.polarity(seq),
+            # self.polarizability(seq),
+            self.van_der_Waals_volume(seq),
+        ]
+        res = [' '.join(list(seq)), ] + [str(int(np.mean(i))) for i in phyche]
+        res = ' | '.join(res)
+        return res
+
     def physical_chemical(self, seq:str, label:int=None) -> pd.Series:
         '''
         physical chemical properties given a epitope sequence

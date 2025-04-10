@@ -77,7 +77,7 @@ class FineTune:
             grouped_inputs[length].append(item)
 
         # feed model by batch
-        batch_size = 8
+        batch_size = 4
         all_probs = []
         all_predicts, all_predictions = [], []
         all_strings = []
